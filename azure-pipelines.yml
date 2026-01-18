@@ -25,7 +25,7 @@ stages:
       displayName: build component A
 
 - stage: Stage_Comp_B
-  dependsOn: Stage_Comp_A
+  dependsOn: Stage_starting_point
   displayName: Stage Component B
   jobs: 
   - job: Job_Comp_B
@@ -35,7 +35,7 @@ stages:
       displayName: build component B
 
 - stage: Stage_Comp_C
-  dependsOn: Stage_Comp_B
+  dependsOn: Stage_starting_point
   displayName: Stage Component C
   jobs: 
   - job: Job_Comp_C
