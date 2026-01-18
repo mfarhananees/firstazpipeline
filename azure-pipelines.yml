@@ -1,19 +1,92 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+- stage: Stage_starting_point
+  displayName: Starting Point
+  jobs: 
+  - job: Starting_point_job
+    displayName: Starting point job
+    steps:
+    - script: echo pre processing 
+      displayName: pre processing
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- stage: Stage_Comp_A
+  dependsOn: Stage_starting_point
+  displayName: Stage Component A
+  jobs: 
+  - job: Job_Comp_A
+    displayName: Job component A
+    steps:
+    - script: echo building component A
+      displayName: build component A
+
+- stage: Stage_Comp_B
+  dependsOn: Stage_starting_point
+  displayName: Stage Component B
+  jobs: 
+  - job: Job_Comp_B
+    displayName: Job component B
+    steps:
+    - script: echo building component B
+      displayName: build component B
+
+- stage: Stage_Comp_C
+  dependsOn: Stage_starting_point
+  displayName: Stage Component C
+  jobs: 
+  - job: Job_Comp_C
+    displayName: Job component C
+    steps:
+    - script: echo building component C
+      displayName: build component C
+
+- stage: Stage_artifacts
+  dependsOn: 
+  - Stage_Comp_A
+  - Stage_Comp_B
+  - Stage_Comp_C
+  displayName: Produce Artifacts
+  jobs: 
+  - job: Job_Artifacts
+    displayName: Job Artifacts
+    steps:
+    - script: echo producing artifacts 
+      displayName: producing artifacts
+
+- stage: Stage_Deploy_Prod
+  dependsOn: Stage_Artifacts
+  condition: succeeded('Stage_Artifacts')
+  displayName: Deploy application Prod
+  jobs: 
+  - job: Job_Deploy_Prod
+    displayName: Job Deployment
+    steps:
+    - script: echo deploying
+      displayName: deploying application prod
+
+- stage: Stage_Rollback
+  dependsOn: Stage_Artifacts
+  condition: failed('Stage_Artifacts')
+  displayName: Rolling back
+  jobs: 
+  - job: Job_Rollback
+    displayName: Job Rollback
+    steps:
+    - script: echo rolling back application
+      displayName: roll back
+
+- stage: Stage_Deploy_DR
+  dependsOn: 
+  - Stage_Rollback
+  - Stage_Deploy_Prod
+  displayName: Deploy application DR
+  jobs: 
+  - job: Job_Deploy_DR
+    displayName: Job Deployment
+    steps:
+    - script: echo deploying
+      displayName: deploying application DR
